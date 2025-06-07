@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow anyone to upload to the 'palmScans' folder.
+    // For production, you would restrict this, e.g., to authenticated users.
+    match /palmScans/{fileName} {
+      allow read: if true; // Allows all reads for MVP
+      allow write: if request.resource.size < 5 * 1024 * 1024 // Max 5MB
+                   && request.resource.contentType.matches('image/.*');
+      // Example for authenticated users (once auth is set up):
+      // allow write: if request.auth != null
+      //              && request.resource.size < 5 * 1024 * 1024
+      //              && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
